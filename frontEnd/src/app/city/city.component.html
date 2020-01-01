@@ -1,0 +1,21 @@
+<table datatable [dtOptions]="dtOptions" class="row-border hover">
+<thead>
+    <tr>    
+    <th>City name</th>
+    <th>Status</th>
+    <th>Created At</th>
+    </tr>
+</thead>
+<tbody *ngIf="cities?.length != 0">
+    <tr *ngFor="let city of cities">        
+        <td>{{ city.cityName }}</td>
+        <td>{{ city.status }}</td>
+        <td>{{ city.createAt | date:'dd/mm/yyyy' }}</td>
+    </tr>
+</tbody>
+<tbody *ngIf="cities?.length == 0">
+    <tr>
+    <td colspan="3" class="no-data-available">No data!</td>
+    </tr>
+<tbody>
+</table>

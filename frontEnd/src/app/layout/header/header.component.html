@@ -1,0 +1,11 @@
+<!-- <div class="col-12  py-3">
+    <a *ngIf="!isLogin" name="login" [routerLink]="['/login']">Login</a>
+    <a *ngIf="isLogin" name="login" (click)="logout()">Logout</a>
+</div> -->
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+        <div class="navbar-nav">
+        <!-- <a class="nav-item nav-link" routerLink="/">Home</a> -->
+        <a *ngIf="!isLogin" name="login" class="nav-item nav-link" [routerLink]="['/login']">Login</a>
+        <a *ngIf="isLogin" name="logout" class="nav-item nav-link text-right" (click)="logout()">Logout</a>
+    </div>
+</nav>

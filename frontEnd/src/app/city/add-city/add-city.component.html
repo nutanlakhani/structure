@@ -1,0 +1,11 @@
+<p>add-city works!</p>
+<form [formGroup]="cityForm" (submit)="saveCity(cityForm.value)">
+    <div class="form-group">
+        <label>CityName</label>
+        <input type="text" name="cityName" formControlName="cityName">
+    </div>
+    <div class="form-group">
+        <button name="save" >Save</button>
+    </div>
+    
+</form>
