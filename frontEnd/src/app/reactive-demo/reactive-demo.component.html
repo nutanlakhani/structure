@@ -1,0 +1,17 @@
+<p>reactive-demo works!</p>
+<a [routerLink]="['/lifecycle']">Go to lifecycle</a>
+<form [formGroup]="simpleForm" name="simple" (ngSubmit)="submitForm()">
+    <div class="form-group">
+        <label for="name"></label>
+        <input type ="text" class="form-control" id="name" formControlName="firstName">
+    </div>
+    <div formArrayName="hobiees" >
+        <div *ngFor="let a of simpleForm.controls['hobiees'].controls; let i = index">
+            <input type="text" class="form-control" formControlName="{{i}}">
+            <button type="button" (click)="removeHobiie(i)"></button>
+        </div>
+    </div>
+    <button type="button" (click)="addHobiie()">Add</button>
+    <div></div>
+    <button type="submit" name="submit">Submit</button>
+</form>

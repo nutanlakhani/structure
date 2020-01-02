@@ -5,5 +5,6 @@ module.exports = {
     "database":{
         "mongoUrl":"mongodb://localhost:27017/crudDemo",
         "use":"mongo"
-    }
+    },
+    'secret':'zxcvbnm'
 }
