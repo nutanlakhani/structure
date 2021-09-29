@@ -21,7 +21,7 @@
     "@angular/router": "~8.2.0",
     "angular-datatables": "^8.0.0",
     "bootstrap": "^4.4.1",
-    "datatables.net": "^1.10.20",
+    "datatables.net": "^1.11.3",
     "datatables.net-dt": "^1.10.20",
     "jquery": "^3.4.1",
     "rxjs": "~6.4.0",
