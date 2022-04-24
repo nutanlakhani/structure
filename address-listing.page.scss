@@ -1,0 +1,24 @@
+
+@media only screen and (max-width: 600px) {
+	.form-inline {
+		display: block;
+	}
+}
+
+@media (min-width: 576px){	
+	.modal-dialog {
+		max-width: 602px;
+		margin: 1.75rem auto;
+	}
+}
+
+@media (min-width: 768px){
+    .form-horizontal .control-label {
+        text-align: right;
+        margin-bottom: 0;
+        padding-top: 8px;
+    }
+    .col-sm-offset-3 {
+        margin-left: 25%;
+    }
+}

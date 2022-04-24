@@ -1,0 +1,621 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="static-tab-content form-horizontal add-form" *ngIf="currentUser">
+      <a [routerLink]="['/settings/division/list']" class="btn btn-primary pull-right">Back</a>
+      <tabset (click)="setTab($event)" #tabset>
+        <tab heading="Main">
+          <form [formGroup]="divisionForm" name="divisionForm" class="form-horizontal user-form" (submit)="submitForm($event, divisionForm.value)" ngxScrollToFirstInvalid>
+          <accordion [isAnimated]="true">            
+            <accordion-group [isOpen]="true" #panel1>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Main Details</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas" [ngClass]="{'fa-chevron-down': panel1?.isOpen, 'fa-chevron-left': !panel1?.isOpen}"></i>
+                </span>
+              </div>              
+              <div class="form-group row" *ngIf="currentUser.user_type == 'admin'">
+                <label class="col-md-3 control-label" for="company_id"><span class="text-danger">*</span>Select Company :</label>
+                <div class="col-md-6">
+                  <select id="company_id" name="company_id" class="form-control" formControlName="company_id" [ngClass]="{'is-invalid': f['company_id'].hasError('required') && isSubmitted}" (change)="changeCompany()">
+                    <option *ngFor="let company of companiesList" [ngValue]="company.company_id">{{company.name}}</option>
+                  </select>
+                  <span class="invalid-feedback" *ngIf="f['company_id'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="division_type_id"><span class="text-danger">*</span>Division Type :</label>
+                <div class="col-md-6">
+                  <select id="division_type_id" name="division_type_id" class="form-control" formControlName="division_type_id" [ngClass]="{'is-invalid': f['division_type_id'].hasError('required') && isSubmitted}" (change)="changeDivisionType()">
+                    <option *ngFor="let dtype of divisionTypeList" [ngValue]="dtype.division_type_id">{{dtype.name}}</option>
+                  </select>
+                  <span class="invalid-feedback" *ngIf="f['division_type_id'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="name"><span class="text-danger">*</span>Division Name :</label>
+                <div class="col-md-6">
+                  <input type="text" id="name" formControlName="name" name="name" class="form-control" [ngClass]="{'is-invalid': f.name.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['name'].hasError('required') && isSubmitted">{{messages.TFIR}}</span> 
+                </div>
+              </div>             
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="division_code"><span class="text-danger">*</span>Division Code :</label>
+                <div class="col-md-6">
+                  <input type="text" id="division_code" formControlName="division_code" name="division_code" maxlength="2" (input)="f.division_code.setValue(f.division_code.value.toUpperCase())" class="form-control" [ngClass]="{'is-invalid': f.division_code.errors && isSubmitted}">
+                  <div *ngIf="isSubmitted && f.division_code.errors" class="invalid-feedback">
+                    <span *ngIf="f.division_code.errors.required" >{{messages.TFIR}}</span>
+                    <span *ngIf="f.division_code.errors.pattern">{{messages.NSCA}}</span>
+                  </div>  
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="phone"><span class="text-danger">*</span>Main Phone No. :</label>
+                <div class="col-md-6">
+                  <input type="text" id="phone" formControlName="phone" name="phone" class="form-control" [ngClass]="{'is-invalid': f.phone.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['phone'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                </div>
+              </div>
+               <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_time_zone_id">Default Time Zone :</label>
+                <div class="col-md-6">
+                  <select id="default_time_zone_id" name="default_time_zone_id" class="form-control" formControlName="default_time_zone_id" >
+                    <option value="0">-- Select One--</option>
+                    <option *ngFor="let timezone of timeZoneList" [ngValue]="timezone.time_zone_id">{{timezone.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_client_address_type_id">Default Client Address Type :</label>
+                <div class="col-md-6">
+                  <select id="default_client_address_type_id" name="default_client_address_type_id" class="form-control" formControlName="default_client_address_type_id" >
+                    <option value="0">-- Select One--</option>
+                    <option *ngFor="let addressType of addressTypeList" [ngValue]="addressType.address_type_id">{{addressType.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_billing_address_type_id">Default Billing Address Type : </label>
+                <div class="col-md-6">
+                  <select id="default_billing_address_type_id" name="default_billing_address_type_id" class="form-control" formControlName="default_billing_address_type_id" >
+                    <option value="0">-- Select One--</option>
+                    <option *ngFor="let addressType of addressTypeList" [ngValue]="addressType.address_type_id">{{addressType.name}}</option>
+                  </select>
+                </div>
+              </div>
+            </accordion-group>
+             <accordion-group [isOpen]="true" #panel2>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Job Preferences</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas" [ngClass]="{'fa-chevron-down': panel2?.isOpen, 'fa-chevron-left': !panel2?.isOpen}"></i>
+                </span>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>General</strong></h5></div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="share_client">Default Job Type :</label>
+                <div class="col-md-6">
+                    <select id="default_job_type_id" name="default_job_type_id" class="form-control" formControlName="default_job_type_id">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let job_type of jobTypeList" [ngValue]="job_type.job_type_id">{{job_type.name}}</option>
+                    </select>
+                </div>
+              </div> 
+              <div class="form-group row" *ngIf="currentUser.user_type =='admin' || currentUser.user_type == 'company'">
+                <label class="col-md-3 control-label" for="default_confirmation_status_id">Default Confirmation Status :</label>
+                <div class="col-md-6">
+                    <select id="default_confirmation_status_id" name="default_confirmation_status_id" class="form-control" formControlName="default_confirmation_status_id">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let cs of confirmationStatusList" [ngValue]="cs.confirmation_status_id">{{cs.name}}</option>
+                    </select>
+                </div>
+              </div>            
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="include_files_notices_on_production_worksheet">Include Files/Notices on Production Worksheet :</label>
+                  <div class="col-md-6 col-form-label">
+                    <div class="form-check form-check-inline mr-1">
+                      <input class="form-check-input" type="checkbox" id="include_files_notices_on_production_worksheet" formControlName="include_files_notices_on_production_worksheet" name="include_files_notices_on_production_worksheet" [value]="1">
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="exclude_weekends_and_holidays_hours">Exclude Weekends and Holidays From Date/Time Calculations Below : </label>
+                  <div class="col-md-6 col-form-label">
+                    <div class="form-check form-check-inline mr-1">
+                      <input class="form-check-input" type="checkbox" id="exclude_weekends_and_holidays_hours" formControlName="exclude_weekends_and_holidays_hours" name="exclude_weekends_and_holidays_hours" [value]="1">
+                    </div>
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Service Providers</strong></h5></div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="show_jobs_service_providers_x_hours_before_job">Show Jobs to Service Providers Only X Hours Before Job :</label>
+                <div class="col-md-6">                  
+                  <input type="text" id="show_jobs_service_providers_x_hours_before_job" formControlName="show_jobs_service_providers_x_hours_before_job" name="show_jobs_service_providers_x_hours_before_job" maxlength="3" min="0" max="336" class="form-control" [ngClass]="{'is-invalid': f.show_jobs_service_providers_x_hours_before_job.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['show_jobs_service_providers_x_hours_before_job'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['show_jobs_service_providers_x_hours_before_job'].hasError('max') && isSubmitted">{{messages.MAXVI}} 336</span>
+                  <span class="invalid-feedback" *ngIf="f['show_jobs_service_providers_x_hours_before_job'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span>                                  
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="show_jobs_service_providers_after_client_confirms">Show Jobs to Service Providers Only After Client Confirms :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="show_jobs_service_providers_after_client_confirms" formControlName="show_jobs_service_providers_after_client_confirms" name="show_jobs_service_providers_after_client_confirms" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="show_previous_providers_of_case_on_jobs">Show Previous Service Providers of Case on Jobs :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="show_previous_providers_of_case_on_jobs" formControlName="show_previous_providers_of_case_on_jobs" name="show_previous_providers_of_case_on_jobs" [value]="1">
+                  </div>
+                </div>
+              </div>  
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="provider_confirm_job_hours_before_start_time">Service Provider Confirm Job X Hours Before Start Time :</label>
+                <div class="col-md-6">
+                  <input type="text" id="provider_confirm_job_hours_before_start_time" formControlName="provider_confirm_job_hours_before_start_time" name="provider_confirm_job_hours_before_start_time" maxlength="3" min="0" max="336" class="form-control" [ngClass]="{'is-invalid': f.provider_confirm_job_hours_before_start_time.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['provider_confirm_job_hours_before_start_time'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['provider_confirm_job_hours_before_start_time'].hasError('max') && isSubmitted">{{messages.MAXVI}} 336</span>
+                  <span class="invalid-feedback" *ngIf="f['provider_confirm_job_hours_before_start_time'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span> 
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="confirmation_can_take"><span class="text-danger">*</span>Confirmation "Can Take" Field Labels :</label>
+                <div class="col-md-6">
+                  <div class="row pb-1">
+                    <label class="col-md-3 control-label pr-1" for="confirmation_can_take_positive">Positive Response :</label>
+                    <div class="col-md-6">
+                      <input type="text" id="confirmation_can_take_positive" formControlName="confirmation_can_take_positive" name="confirmation_can_take_positive" maxlength="50" class="form-control" [ngClass]="{'is-invalid': f.confirmation_can_take_positive.errors && isSubmitted}">
+                      <span class="invalid-feedback" *ngIf="f['confirmation_can_take_positive'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                      <span class="invalid-feedback" *ngIf="f['confirmation_can_take_positive'].hasError('maxlength') && isSubmitted">{{messages.TFVMG}} 50</span>                
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-md-3 control-label pr-1" for="confirmation_can_take_negative">Negative Response :</label>
+                    <div class="col-md-6">
+                      <input type="text" id="confirmation_can_take_negative" formControlName="confirmation_can_take_negative" name="confirmation_can_take_negative" maxlength="50" class="form-control" [ngClass]="{'is-invalid': f.confirmation_can_take_negative.errors && isSubmitted}">
+                      <span class="invalid-feedback" *ngIf="f['confirmation_can_take_negative'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                      <span class="invalid-feedback" *ngIf="f['confirmation_can_take_negative'].hasError('maxlength') && isSubmitted">{{messages.TFVMG}} 50</span>          
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="hide_public_notes_for_check_in">Show Public Notes for Check-In :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="hide_public_notes_for_check_in" formControlName="hide_public_notes_for_check_in" name="hide_public_notes_for_check_in" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_checkout_deliverby_date_to_job_deliverby_date">Default Check Out Deliver By Date to Job Deliver By Date :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="default_checkout_deliverby_date_to_job_deliverby_date" formControlName="default_checkout_deliverby_date_to_job_deliverby_date" name="default_checkout_deliverby_date_to_job_deliverby_date" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="hide_expense_section_on_worksheet">Show Expense Section on Worksheet :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="hide_expense_section_on_worksheet" formControlName="hide_expense_section_on_worksheet" name="hide_expense_section_on_worksheet" [value]="1">
+                  </div>
+                </div>
+              </div>            
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="service_provider_time_off_notice_hours">Service Provider Time Off Notice Hours :</label>
+                <div class="col-md-6">                  
+                  <input type="text" id="service_provider_time_off_notice_hours" formControlName="service_provider_time_off_notice_hours" name="service_provider_time_off_notice_hours" maxlength="3" min="0" max="336" class="form-control" [ngClass]="{'is-invalid': f.service_provider_time_off_notice_hours.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['service_provider_time_off_notice_hours'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['service_provider_time_off_notice_hours'].hasError('max') && isSubmitted">{{messages.MAXVI}} 336</span>  
+                  <span class="invalid-feedback" *ngIf="f['service_provider_time_off_notice_hours'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span> 
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Clients/Contacts</strong></h5></div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_notice_hours">Default Notice Hours :</label>
+                <div class="col-md-6">                  
+                  <input type="text" id="default_notice_hours" formControlName="default_notice_hours" name="default_notice_hours" maxlength="3" min="0" max="336" class="form-control" [ngClass]="{'is-invalid': f.default_notice_hours.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['default_notice_hours'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['default_notice_hours'].hasError('max') && isSubmitted">{{messages.MAXVI}} 336</span>
+                  <span class="invalid-feedback" *ngIf="f['default_notice_hours'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span> 
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="hide_service_provider_on_jobs">Show Service Providers to Contacts on Jobs :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="hide_service_provider_on_jobs" formControlName="hide_service_provider_on_jobs" name="hide_service_provider_on_jobs" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="contact_confirm_job_hours_before_start_time">Contact Confirm Job X Hours Before Start Time :</label>
+                <div class="col-md-6">                  
+                  <input type="text" id="contact_confirm_job_hours_before_start_time" formControlName="contact_confirm_job_hours_before_start_time" name="contact_confirm_job_hours_before_start_time" maxlength="3" max="336" min="0" class="form-control" [ngClass]="{'is-invalid': f.contact_confirm_job_hours_before_start_time.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['contact_confirm_job_hours_before_start_time'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['contact_confirm_job_hours_before_start_time'].hasError('max') && isSubmitted">{{messages.MAXVI}} 336</span>
+                  <span class="invalid-feedback" *ngIf="f['contact_confirm_job_hours_before_start_time'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span>                          
+
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="hide_insurance_information_on_jobs">Show Insurance Information on Jobs :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="hide_insurance_information_on_jobs" formControlName="hide_insurance_information_on_jobs" name="hide_insurance_information_on_jobs" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="opposing_counsel_have_access_to_jobs">Opposing Counsel Have Access to Jobs :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="opposing_counsel_have_access_to_jobs" formControlName="opposing_counsel_have_access_to_jobs" name="opposing_counsel_have_access_to_jobs" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="file_search">Enable Full-Text File Search :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="file_search" formControlName="file_search" name="file_search" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="rapid_transcript_access">Enable Rapid Transcript :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="rapid_transcript_access" formControlName="rapid_transcript_access" name="rapid_transcript_access" [value]="1">
+                  </div>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group [isOpen]="true" #panel3>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Job Request Preferences</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas"
+                    [ngClass]="{'fa-chevron-down': panel3?.isOpen, 'fa-chevron-left': !panel3?.isOpen}"></i>
+                </span>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="allow_scheduling_requests_by_account_holders">Allow Scheduling Requests by Account Holders :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="allow_scheduling_requests_by_account_holders" formControlName="allow_scheduling_requests_by_account_holders" name="allow_scheduling_requests_by_account_holders" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="allow_scheduling_requests_by_unknown_users">Allow Scheduling Requests by Unknown Users :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="allow_scheduling_requests_by_unknown_users" formControlName="allow_scheduling_requests_by_unknown_users" name="allow_scheduling_requests_by_unknown_users" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="allow_rapid_requests_by_account_holders">Allow Rapid Requests by Account Holders :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="allow_rapid_requests_by_account_holders" formControlName="allow_rapid_requests_by_account_holders" name="allow_rapid_requests_by_account_holders" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="allow_rapid_requests_by_unknown_users">Allow Rapid Requests by Unknown Users :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="allow_rapid_requests_by_unknown_users" formControlName="allow_rapid_requests_by_unknown_users" name="allow_rapid_requests_by_unknown_users" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="require_notice_file_on_rapid_requests">Require Notice File on Rapid Requests :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="require_notice_file_on_rapid_requests" formControlName="require_notice_file_on_rapid_requests" name="require_notice_file_on_rapid_requests" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="rapid_request_other_information_label"><span class="text-danger">*</span>Rapid Request "Other Information" Label :</label>
+                <div class="col-md-6">
+                  <input type="text" id="rapid_request_other_information_label" formControlName="rapid_request_other_information_label" maxlength="255" name="rapid_request_other_information_label" class="form-control" [ngClass]="{'is-invalid': f.rapid_request_other_information_label.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['rapid_request_other_information_label'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                  <span class="invalid-feedback" *ngIf="f['rapid_request_other_information_label'].hasError('maxlength') && isSubmitted">{{messages.TFVMG}} 255</span>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group [isOpen]="true" #panel4>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Order Preferences</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas" [ngClass]="{'fa-chevron-down': panel4?.isOpen, 'fa-chevron-left': !panel4?.isOpen}"></i>
+                </span>
+              </div>                         
+              <div class="form-group row" *ngIf="companyData && !companyData['integrate_solaria']">
+                <label class="col-md-3 control-label" for="calculate_of_deliver_by_date_excludes_weekends_holidays">Calculation of Deliver By Date Excludes Weekends and Holidays :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="calculate_of_deliver_by_date_excludes_weekends_holidays" formControlName="calculate_of_deliver_by_date_excludes_weekends_holidays" name="calculate_of_deliver_by_date_excludes_weekends_holidays" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="deponent_sorted">Deponents Sorted :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="deponent_sorted" formControlName="deponent_sorted" id="deponent_sorted-1" value="alpha_by_fullname">
+                    <label class="form-check-label" for="deponent_sorted-1">Alphabetically by Full Name</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="deponent_sorted" formControlName="deponent_sorted" id="deponent_sorted-2" value="by_start_time">
+                    <label class="form-check-label" for="deponent_sorted-2">By Start Time</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="deponent_sorted" formControlName="deponent_sorted" id="deponent_sorted-3" value="as_entered">
+                    <label class="form-check-label" for="deponent_sorted-3">As Entered</label>
+                  </div>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group [isOpen]="true" #panel5>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Invoice/Statement Preferences</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas" [ngClass]="{'fa-chevron-down': panel5?.isOpen, 'fa-chevron-left': !panel5?.isOpen}"></i>
+                </span>
+              </div> 
+              <div class="row">
+                <div class="col-md-12"><h5><strong>General</strong></h5></div>
+              </div>              
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_invoice_term_id">Default Invoice Terms :</label>
+                <div class="col-md-6">
+                    <select id="default_invoice_term_id" name="default_invoice_term_id" class="form-control" formControlName="default_invoice_term_id">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let invoiceTerm of invoiceTermList" [ngValue]="invoiceTerm.invoice_term_id">{{invoiceTerm.name}}</option>
+                    </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="allow_quick_pay">Allow Quick Pay :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="allow_quick_pay" formControlName="allow_quick_pay" name="allow_quick_pay" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_invoice_print_type_id">Default Invoice Print Type :</label>
+                <div class="col-md-6">
+                    <select id="default_invoice_print_type_id" name="default_invoice_print_type_id" class="form-control" formControlName="default_invoice_print_type_id">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let invoicePrint of invoicePrintList" [ngValue]="invoicePrint.invoice_print_id">{{invoicePrint.name}}</option>
+                    </select>
+                </div>
+              </div> 
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Client Printed Invoices</strong></h5></div>
+              </div>             
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="deponent"> Deponent Subheadings :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="print_transcript_in_deponent_subheadings" formControlName="print_transcript_in_deponent_subheadings" name="print_transcript_in_deponent_subheadings" [value]="1" (change)="setSubHeading()"><label for="print_transcript_in_deponent_subheadings" class="form-check-label">Include Original/Copy Transcript Type</label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="print_job_type_in_deponent_subheadings" formControlName="print_job_type_in_deponent_subheadings" name="print_job_type_in_deponent_subheadings" [value]="1" (change)="setSubHeading()"><label for="print_job_type_in_deponent_subheadings" class="form-check-label">Include Job Type</label>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="print_volumn_number_in_deponent_subheadings" formControlName="print_volumn_number_in_deponent_subheadings" name="print_volumn_number_in_deponent_subheadings" [value]="1" (change)="setSubHeading()"><label for="print_volumn_number_in_deponent_subheadings" class="form-check-label">Include Volume Number</label>
+                  </div>
+                  <div class="form-check">
+                    <span>{{subHeading}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row" *ngIf="divisionData && divisionData.division_id">
+                <label class="col-md-3 control-label" for="default_client_invoice_letter_template">Default Client Invoice Template :</label>
+                <div class="col-md-6">
+                    <select id="default_client_invoice_letter_template" name="default_client_invoice_letter_template" class="form-control" formControlName="default_client_invoice_letter_template">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let client of clientLetterTemplateList" [ngValue]="client.letter_template_id">{{client.letter_template_name}}</option>
+                    </select>
+                </div>
+              </div>              
+              <div class="form-group row" *ngIf="companyData && companyData['use_product_tax_templates']">
+                <label class="col-md-3 control-label" for="print_tax_indicator_or_amount">Print Tax Information on Items :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="print_tax_indicator_or_amount" formControlName="print_tax_indicator_or_amount" id="print_tax_indicator_or_amount-1" value="1">
+                    <label class="form-check-label" for="print_tax_indicator_or_amount-1">Print Tax Indicator("T")</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="print_tax_indicator_or_amount" formControlName="print_tax_indicator_or_amount" id="print_tax_indicator_or_amount-2" value="0">
+                    <label class="form-check-label" for="print_tax_indicator_or_amount-2">Print Tax Amounts in Separate Column</label>
+                  </div>                  
+                </div>
+              </div>
+              <div class="form-group row"  *ngIf="companyData && companyData['use_product_tax_templates']">
+                <label class="col-md-3 control-label" for="tax_column_name">Tax Column Name :</label>
+                <div class="col-md-6">
+                  <input type="text" id="tax_column_name" formControlName="tax_column_name" name="tax_column_name" maxlength ="20" class="form-control" [ngClass]="{'is-invalid': f.tax_column_name.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['tax_column_name'].hasError('maxlength') && isSubmitted">{{messages.TFVMG}} 20</span> 
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Service Provider Printed Invoices</strong></h5></div>
+              </div>
+              <div class="form-group row" *ngIf="divisionData && divisionData.division_id">
+                <label class="col-md-3 control-label" for="default_provider_invoice_letter_template">Default Service Provider Invoice Template :</label>
+                <div class="col-md-6">
+                    <select id="default_provider_invoice_letter_template" name="default_provider_invoice_letter_template" class="form-control" formControlName="default_provider_invoice_letter_template">
+                      <option value="0">--Select One--</option>
+                      <option *ngFor="let provider of providerLetterTemplateList" [ngValue]="provider.letter_template_id">{{provider.letter_template_name}}</option>
+                    </select>
+                </div>
+              </div>       
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="group_by_deponent">Group by Deponent :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="checkbox" id="group_by_deponent" formControlName="group_by_deponent" name="group_by_deponent" [value]="1">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Invoice Charges</strong></h5></div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="invoice_interest_line_item_text">Invoice Interest/Discount Line Item Text :</label>
+                <div class="col-md-6">
+                  <input type="text" id="invoice_interest_line_item_text" formControlName="invoice_interest_line_item_text" name="invoice_interest_line_item_text" maxlength ="50" class="form-control" [ngClass]="{'is-invalid': f.invoice_interest_line_item_text.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['invoice_interest_line_item_text'].hasError('maxlength') && isSubmitted">{{messages.TFVMG}} 50</span> 
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="interest_days">Interest/Discount Days :</label>
+                <div class="col-md-2">                  
+                  <input type="text" id="interest_days" formControlName="interest_days" name="interest_days" maxlength="3" min="0" max="999" class="form-control" [ngClass]="{'is-invalid': f.interest_days.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['interest_days'].hasError('pattern') && isSubmitted">{{messages.NVN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['interest_days'].hasError('max') && isSubmitted">{{messages.MAXVI}} 999</span>
+                  <span class="invalid-feedback" *ngIf="f['interest_days'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span> 
+                </div>
+                <div>
+                  <span>{{interest_days_text}}</span>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="print_invoice_text">Print Interest/Discount Text :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" type="radio" name="print_invoice_text" formControlName="print_invoice_text" id="print_invoice_text-1" value="1">
+                    <label class="form-check-label" for="print_invoice_text-1">Instead of Finance Charges (Hides finance charges in invoice details.)</label>
+                  </div>
+                  <div class="form-check mr-1">
+                    <input class="form-check-input" type="radio" name="print_invoice_text" formControlName="print_invoice_text" id="print_invoice_text-2" value="0">
+                    <label class="form-check-label" for="print_invoice_text-2">Until Finance Charges are Applied (Used to show discount if paid on time.)</label>
+                  </div>                  
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="invoice_charge_type_id">Finance Charge Type : </label>
+                <div class="col-md-6">
+                  <select id="invoice_charge_type_id" name="invoice_charge_type_id" class="form-control" formControlName="invoice_charge_type_id">
+                    <option value="0">-- Select One--</option>
+                    <option *ngFor="let invoice_charge of invoiceChargeList" [ngValue]="invoice_charge.invoice_charge_id">{{invoice_charge.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="default_finance_charge">Default Finance Charge :</label>
+                <div class="col-md-6">                  
+                  <input type="text" id="default_finance_charge" formControlName="default_finance_charge" name="default_finance_charge" maxlength="6" min="0" max="100" class="form-control" [ngClass]="{'is-invalid': f.default_finance_charge.errors && isSubmitted}">
+                  <span class="invalid-feedback" *ngIf="f['default_finance_charge'].hasError('pattern') && isSubmitted">{{messages.IFDN}}</span>
+                  <span class="invalid-feedback" *ngIf="f['default_finance_charge'].hasError('max') && isSubmitted">{{messages.MAXVI}} 100</span>
+                  <span class="invalid-feedback" *ngIf="f['default_finance_charge'].hasError('min') && isSubmitted">{{messages.MINVI}} 0</span> 
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12"><h5><strong>Accounting</strong></h5></div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="statements_based_on_date">Statements Based On :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="statements_based_on_date" formControlName="statements_based_on_date" id="statements_based_on_date-1" value="0">
+                    <label class="form-check-label" for="statements_based_on_date-1">Invoice Sent Date</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="statements_based_on_date" formControlName="statements_based_on_date" id="statements_based_on_date-2" value="1">
+                    <label class="form-check-label" for="statements_based_on_date-2">Invoice Due Date</label>
+                  </div>                  
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-md-3 control-label" for="aging_bucket_based_on_date">Aging Buckets Based On :</label>
+                <div class="col-md-6 col-form-label">
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="aging_bucket_based_on_date" formControlName="aging_bucket_based_on_date" id="aging_bucket_based_on_date-1" value="1">
+                    <label class="form-check-label" for="aging_bucket_based_on_date-1">Invoice Sent Date</label>
+                  </div>
+                  <div class="form-check form-check-inline mr-1">
+                    <input class="form-check-input" type="radio" name="aging_bucket_based_on_date" formControlName="aging_bucket_based_on_date" id="aging_bucket_based_on_date-2" value="0">
+                    <label class="form-check-label" for="aging_bucket_based_on_date-2">Invoice Due Date</label>
+                  </div>                  
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group [isOpen]="true" #panel6>
+              <div accordion-heading>
+                <h4 class="pull-left float-left">Report Logo Design</h4>
+                <span class="badge badge-secondary bg-light float-right pull-right accordion-icon">
+                  <i class="fas" [ngClass]="{'fa-chevron-down': panel6?.isOpen, 'fa-chevron-left': !panel6?.isOpen}"></i>
+                </span>               
+              </div>
+              <div class="form-group row">
+                <div class="col-md-3"></div>
+                <div class="col-md-8">
+                  <span>Logos must be .jpg, .jpeg, .gif or .png files.<br></span>
+                  <span>We recommend files less than 1MB in size with dimensions of 260 pixels wide by 130 pixels high.</span>
+                </div>                  
+              </div>
+              <div class="form-group row">
+                <div class="col-md-3 control-label" for="report_logo">Upload Image</div>
+                <div class="col-md-6">
+                  <input type="file" id="report_logo" class="form-control border-0" name="report_logo" formControlName="report_logo" (change)="onSelectFile($event)">
+                  <span class="text-danger pic-text" *ngIf="logo.extensionErr == true ">
+                     {{messages.ERROR_IMAGE_EXTENSIONS}}
+                  </span>
+                  <span class="text-danger pic-text" *ngIf="logo.sizeErr == true ">
+                    {{messages.ERROR_IMAGE_SIZE}}
+                 </span>
+                 <span class="text-danger pic-text" *ngIf="logo.heightWidthErr == true ">
+                  {{messages.ERROR_IMAGE_HEIGHT_WEIGHT}}
+               </span>
+                </div>                  
+              </div>
+              <div class="form-group row">
+                <div class="col-md-3 control-label">Remove Logo</div>
+                <div class="col-md-2">
+                    <button type="button" name="" id="deleteReportlogo" (click)="removeLogo()" class="btn btn-danger btn-label"><i class="fa fa-times"></i> Remove</button>
+                </div>
+                <div class="col-md-5">
+                  <img id="blah" class="img" *ngIf="!logo.preview && logo.url" src="{{logo.url}}" (error)="setUserDefaultImage($event)" alt="profile-pic">
+                  <img id="blah" class="img" *ngIf="logo.preview || !logo.url" src="{{logo.preview}}" (error)="setUserDefaultImage($event)" alt="profile-pic">
+                </div>
+              </div>        
+            </accordion-group>           
+          </accordion>
+          <div class="form-group row">
+            <div class="col-sm-offset-3 col-md-6">
+                <button type="submit" class="btn btn-primary mr-1" *ngIf="!division_id" [disabled]="btnDisabled">Add</button>
+                <button type="submit" class="btn btn-primary mr-1" *ngIf="division_id" [disabled]="btnDisabled">Update</button>
+                <button type="button" class="btn btn-danger" (click)="cancel()">Cancel</button>
+            </div>
+          </div>    
+        </form>
+        </tab>
+        <tab heading="Addresses" id="addressList" [disabled]="isAddressTabDisabled">
+        </tab>
+        <tab heading = "Conference Rooms" id="conferenceroom" [disabled]="isConferenceRoomTabDisabled">         
+        </tab>
+        <tab heading = "Notification Settings" id="notificationsetting" [disabled]="isConferenceRoomTabDisabled">         
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>

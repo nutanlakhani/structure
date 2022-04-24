@@ -1,0 +1,187 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="static-tab-content form-horizontal view-form" *ngIf="currentUser">
+      <a [routerLink]="['/settings/division/list']" class="btn btn-primary pull-right">Back</a>
+      <tabset (click)="setTab($event)" #tabset>
+        <tab heading = "Main" id="view">         
+        </tab>
+        <tab heading = "Addresses" [active]="true" id="addressList">
+          <div class="animated fadeIn">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="mb-1">
+                      <h5><i class="fa fa-align-justify mr-1"></i>Address List<a class="btn btn-primary pull-right mr-2" [routerLink]="['/settings/division',division_id,'company',company_id,'createaddress']">Add</a></h5>
+                    </div>
+                  </div>
+          
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th (click)="headerSort('address_type_name', order_type)">Address Type
+                              <span *ngIf="sort_field != 'address_type_name'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'address_type_name'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'address_type_name'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('address1', order_type)">Street Address 1
+                              <span *ngIf="sort_field != 'address1'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'address1'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'address1'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('address2', order_type)">Street Address 2
+                              <span *ngIf="sort_field != 'address2'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'address2'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'address2'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('city', order_type)">City
+                              <span *ngIf="sort_field != 'city'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'city'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'city'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('state_name', order_type)">State
+                              <span *ngIf="sort_field != 'state_name'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'state_name'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'state_name'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('zipcode', order_type)">Postal Code
+                              <span *ngIf="sort_field != 'zipcode'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'zipcode'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'zipcode'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('effective_date', order_type)">Effective Date
+                              <span *ngIf="sort_field != 'effective_date'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'effective_date'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'effective_date'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th (click)="headerSort('expiration_date', order_type)">Expiration Date
+                              <span *ngIf="sort_field != 'expiration_date'" class="header-sort"><i class="fa fa-sort"></i></span>
+                              <span *ngIf="order_type == 'ASC' && sort_field == 'expiration_date'" class="header-sort"><i class="fa fa-sort-desc"></i></span>
+                              <span *ngIf="order_type == 'DESC' && sort_field == 'expiration_date'" class="header-sort"><i class="fa fa-sort-asc"></i></span>
+                            </th>
+                            <th>
+                              <span>Action</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let address of addressList;let i=index">
+                            <td><a href="javascript:void(0)" (click)="openModal(address.address_id)">{{address.address_type_name}}</a></td>
+                            <td>{{address.address1}}</td>
+                            <td>{{address.address2}}</td>
+                            <td>{{address.city}}</td>
+                            <td>{{address.state_name}}</td>
+                            <td>{{address.zipcode}}</td>
+                            <td>{{(address.effective_date != '0000-00-00') ? (address.effective_date | date:'MM/dd/Y') : '---'}}</td>
+                            <td>{{(address.expiration_date != '0000-00-00') ? (address.expiration_date | date:'MM/dd/Y') : '---'}}</td>
+                            <td><a [routerLink]="['/settings/division',division_id,'company',company_id,'updateaddress', address.address_id]" data-toggle="tooltip" data-placement="bottom" title="Edit" class="pr-1"><i
+                                class="fa fa-pencil-square-o fa-lg"></i></a>
+                                <a data-toggle="tooltip" href="javascript:void(0)" (click)="deleteAddress(address.address_id)" data-placement="bottom" title="Delete"><i class="fa fa-trash-o fa-lg"></i></a></td>
+                          </tr>
+                          <tr *ngIf="!isDataLoading && addressList.length === 0" class="text-center">
+                            <td colspan="9">
+                              <h4 class="mt-4 mb-4">No record found</h4>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>          
+                    <div class="show-entries mb-3 float-left">
+                      <span>Showing {{addressList.length == 0 ? 0 :currentPage*limit- limit+1}} to {{limit*currentPage >
+                        totalItem ? totalItem : limit*currentPage }} of {{totalItem}} Addresses</span>
+                    </div>
+                    <div class="table-pagination float-right" *ngIf="addressList.length > 0">
+                      <pagination [boundaryLinks]="true" [itemsPerPage]="limit" [totalItems]="totalItem"
+                        (pageChanged)="pageChanged($event)" [(ngModel)]="currentPage" [maxSize]="5" previousText="&lsaquo;"
+                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (numPages)="numPages = $event"></pagination>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading = "Conference Rooms" id="conferenceroom">         
+        </tab>
+        <tab heading = "Notification Settings" id="notificationsetting">         
+        </tab>
+      </tabset>      
+    </div>
+  </div>
+</div>
+<div bsModal #addressModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Address Detail</h4>
+        <button type="button" class="close" (click)="addressModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="addressDetail && currentUser">
+        <div class="static-tab-content form-horizontal view-form">
+       
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="address_type_name">Address Type :</label>
+            <div class="col-md-6">
+              <span class="form-control" [innerText]="addressDetail.address_type_name"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="address1">Street Address 1 :</label>
+            <div class="col-md-6">
+              <span class="form-control" [innerText]="addressDetail.address1"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="address2">Street Address 2 :</label>
+            <div class="col-md-6">
+              <span class="form-control" [innerText]="addressDetail.address2"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="city">City :</label>
+            <div class="col-md-6">
+              <span class="form-control"  [innerText]="addressDetail.city"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="state_name">State :</label>
+            <div class="col-md-6">
+              <span class="form-control" [innerText]="addressDetail.state_name"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="zipcode">Postal Code :</label>
+            <div class="col-md-6">
+              <span class="form-control" *ngIf="addressDetail.zipcode" [innerText]="addressDetail.zipcode"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="suffix">Country :</label>
+            <div class="col-md-6">
+              <span class="form-control" *ngIf="addressDetail.country_name" [innerText]="addressDetail.country_name"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="effective_date">Effective Date :</label>
+            <div class="col-md-6">
+              <span class="form-control" [innerText]="(addressDetail.effective_date != '0000-00-00') ? (addressDetail.effective_date | date:'MM/dd/Y') : '---'"></span>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-3 control-label" for="expiration_date">Expiration Date :</label>
+            <div class="col-md-6">
+              <span class="form-control"  [innerText]="(addressDetail.expiration_date != '0000-00-00') ? (addressDetail.expiration_date | date:'MM/dd/Y') : '---'"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="addressModal.hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

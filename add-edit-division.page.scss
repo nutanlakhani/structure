@@ -1,0 +1,41 @@
+.add-form .control-label{
+    font-weight: 500;
+}
+.add-form .editable-btn, .add-form .delete-btn{
+    color: white;
+    float: right;
+}
+.accordion-icon {
+    line-height: 20px;
+}
+.text-danger {
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+}
+.form-group {
+    margin-bottom: 0.5rem;
+}
+img {
+    width: 155px;
+    height: 70px;
+}
+
+.all-service-select {
+    border: 1px solid #ddd;
+    height: 140px;
+    max-height: 140px;
+    overflow-y: scroll;
+    padding-left: 5px;
+}
+
+@media (min-width: 768px){
+    .form-horizontal .control-label {
+        text-align: right;
+        margin-bottom: 0;
+        padding-top: 8px;
+    }
+    .col-sm-offset-3 {
+        margin-left: 25%;
+    }
+}

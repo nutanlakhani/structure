@@ -1,0 +1,108 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="static-tab-content form-horizontal" *ngIf="currentUser">
+      <a [routerLink]="['/settings/division/list']" class="btn btn-primary pull-right">Back</a>
+      <tabset (click)="setTab($event)" #tabset>
+        <tab heading="Main" id="view">
+        </tab>
+        <tab heading="Addresses" [active]="true" id="addressList">         
+          <div class="card border-0">
+            <div class="mb-1">
+              <h5><a class="btn btn-primary pull-right mr-2" [routerLink]="['/settings/division',division_id,'company',company_id,'addressList']">Back to Address Listing</a></h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="static-tab-content form-horizontal add-form" *ngIf="currentUser">
+                    <form [formGroup]="addressForm" name="addressForm" class="form-horizontal user-form"
+                      (submit)="submitForm($event, addressForm.value)" ngxScrollToFirstInvalid>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="address_type_id"><span class="text-danger">*</span>Address Type :</label>
+                          <div class="col-md-6">
+                            <select id="address_type_id" name="address_type_id" class="form-control" formControlName="address_type_id" [ngClass]="{'is-invalid': f['address_type_id'].hasError('required') && isSubmitted}">
+                              <option value="">-- Select One--</option>                              
+                              <option *ngFor="let addressType of addressTypeList" [ngValue]="addressType.address_type_id"> {{addressType.name}}</option>
+                            </select>
+                            <span class="invalid-feedback" *ngIf="f['address_type_id'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                          </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="address1">Street Address 1 :</label>
+                        <div class="col-md-6">
+                          <input type="text" id="address1" formControlName="address1" name="address1" class="form-control">                         
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="address2">Street Address 2 :</label>
+                        <div class="col-md-6">
+                          <input type="text" id="address2" formControlName="address2" name="address2" class="form-control">                          
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="city">City :</label>
+                        <div class="col-md-6">
+                          <input type="text" id="city" formControlName="city" name="city" class="form-control">                      
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="	state_id"><span class="text-danger">*</span>State :</label>
+                        <div class="col-md-6">
+                          <select id="state_id" name="state_id" class="form-control" formControlName="state_id" [ngClass]="{'is-invalid': f['state_id'].hasError('required') && isSubmitted}">
+                            <option value="">-- Select One--</option>
+                            <option *ngFor="let state of stateList" [ngValue]="state.state_id"> {{state.state_name}}</option>
+                          </select>
+                          <span class="invalid-feedback" *ngIf="f['state_id'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="zipcode">Postal Code :</label>
+                        <div class="col-md-6">
+                          <input type="text" id="zipcode" name="zipcode" formControlName="zipcode" class="form-control" autocomplete="zipcode">                          
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="country_id"><span class="text-danger">*</span>Country :</label>
+                        <div class="col-md-6">
+                          <select id="country_id" name="country_id" class="form-control" formControlName="country_id"
+                            [ngClass]="{'is-invalid': f['country_id'].hasError('required') && isSubmitted}" (change)="changeCountry()">
+                            <option *ngFor="let country of countryList" [ngValue]="country.country_id"> {{country.country_name}}</option>
+                          </select>
+                          <span class="invalid-feedback" *ngIf="f['country_id'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="effective_date"><span class="text-danger">*</span> Effective Date :</label>
+                        <div class="col-md-6">
+                          <input type="text" placeholder="Datepicker" class="form-control" bsDatepicker [bsConfig]="{ containerClass: 'theme-dark-blue', adaptivePosition: true}" [maxDate]="maxDate"
+                          placeholder="mm/dd/YYYY" formControlName="effective_date" [ngClass]="{'is-invalid': f['effective_date'].hasError('required') && isSubmitted}">
+                          <span class="invalid-feedback" *ngIf="f['effective_date'].hasError('required') && isSubmitted">{{messages.TFIR}}</span>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-md-3 control-label" for="expiration_date">Expiration Date :</label>
+                        <div class="col-md-6">
+                          <input type="text" placeholder="Datepicker" class="form-control" bsDatepicker [bsConfig]="{ containerClass: 'theme-dark-blue', adaptivePosition: true}" (bsValueChange)="onValueChange($event)" placeholder="mm/dd/YYYY" formControlName="expiration_date">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <div class="col-sm-offset-3 col-md-6">
+                          <button type="submit" class="btn btn-primary mr-1" *ngIf="!address_id" [disabled]="btnDisabled">Add</button>
+                          <button type="submit" class="btn btn-primary mr-1" *ngIf="address_id" [disabled]="btnDisabled">Update</button>
+                          <a class="btn btn-danger mr-2" [routerLink]="['/settings/division',division_id,'company',company_id,'addressList']">Cancel</a>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading = "Conference Rooms" id="conferenceroom">         
+        </tab>
+        <tab heading = "Notification Settings" id="notificationsetting">         
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>
